@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "SK0tilrG85/15vLCvocDwvDiFjESNdrX9RY7xUgwfSOdz2CTI66I4NIbyjEC4zVigjoD+jNa6H5rZoXbTw5LnA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\dimas\\source\\repos\\Push\\Push\\Push.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\dimas\\.nuget\\packages\\exiled\\5.2.2\\exiled.5.2.2.nupkg.sha512"
+  ],
+  "logs": []
+}
