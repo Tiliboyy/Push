@@ -3,6 +3,7 @@ using Exiled.API.Features;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using InventorySystem.Items.Firearms.Modules;
 using UnityEngine;
 using MEC;
 
@@ -40,12 +41,18 @@ namespace Push
                 }
             }
             var ray = new Ray(player.CameraTransform.position, player.CameraTransform.forward);
-            if (!Physics.Raycast(ray, out RaycastHit hit, Main.Instance.Config.PushLength))
+            if (!Physics.Raycast(ray, out RaycastHit hit))
             {
                 response = "No one to push.";
                 return false;
             }
-            var hit_player = Player.Get(hit.transform.gameObject);
+
+            if (Vector3.Distance(player.Position, hit.point) > Main.Instance.Config.PushLength)
+            {
+                response = "No one to push. Distance";
+                return false;
+            }
+            var hit_player = Player.Get(hit.transform.GetComponentInParent<ReferenceHub>());
             if (hit_player == null || hit_player == player)
             {
                 response = "Can't push that.";
@@ -71,15 +78,15 @@ namespace Push
             Vector3 pushed = pusher.CameraTransform.forward * Main.Instance.Config.PushForce;
             Vector3 endPosition = hit_player.Position + new Vector3(pushed.x, 0, pushed.z);
 
-            Log.Debug(endPosition, Main.Instance.Config.DebugMode);
+            Log.Debug(endPosition);
 
             for (int i = 1; i < Main.Instance.Config.Iterations; i++)
             {
                 Vector3 newPos = Vector3.MoveTowards(hit_player.Position, endPosition, Main.Instance.Config.PushForce/Main.Instance.Config.Iterations);
                 
-                Log.Debug(newPos, Main.Instance.Config.DebugMode);
+                Log.Debug(newPos);
 
-                if (Physics.Linecast(hit_player.Position, newPos, hit_player.ReferenceHub.playerMovementSync.CollidableSurfaces))
+                if (Physics.Linecast(hit_player.Position, newPos))
                 {
                     yield break;
                 }
