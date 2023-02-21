@@ -49,7 +49,7 @@ namespace Push
 
             if (Vector3.Distance(player.Position, hit.point) > Main.Instance.Config.PushLength)
             {
-                response = "No one to push. Distance";
+                response = "No one to push.";
                 return false;
             }
             var hit_player = Player.Get(hit.transform.GetComponentInParent<ReferenceHub>());
