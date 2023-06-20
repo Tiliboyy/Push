@@ -34,31 +34,25 @@ namespace Push
             if (Cooldowns.TryGetValue(player, out DateTime value))
             {
                 var difference = DateTime.Now - value;
-                if (difference.TotalSeconds < Main.Instance.Config.PushCooldownSec)
+                if (difference.TotalSeconds < Main.Instance.Config.PushCooldown)
                 {
                     response = "Pushing too much, too fast.";
                     return false;
                 }
             }
-            var ray = new Ray(player.CameraTransform.position, player.CameraTransform.forward);
-            if (!Physics.Raycast(ray, out RaycastHit hit))
+            var cast = Physics.Raycast(player.Position, player.Transform.forward, out var hit, Main.Instance.Config.PushRange);
+            if (!cast)
             {
                 response = "No one to push.";
                 return false;
             }
-
-            if (Vector3.Distance(player.Position, hit.point) > Main.Instance.Config.PushLength)
-            {
-                response = "No one to push.";
-                return false;
-            }
-            var hit_player = Player.Get(hit.transform.GetComponentInParent<ReferenceHub>());
-            if (hit_player == null || hit_player == player)
+            var hitPlayer = Player.Get(hit.transform.GetComponentInParent<ReferenceHub>());
+            if (hitPlayer == null || hitPlayer == player)
             {
                 response = "Can't push that.";
                 return false;
             }
-            Timing.RunCoroutine(PushPlayer(hit_player, player));
+            Timing.RunCoroutine(PushPlayer(hitPlayer, player));
             if (!Cooldowns.TryGetValue(player, out _))
             {
                 Cooldowns.Add(player, DateTime.Now);
@@ -67,7 +61,7 @@ namespace Push
             {
                 Cooldowns[player] = DateTime.Now;
             }
-            hit_player.ShowHint(Regex.Replace(Main.Instance.Config.PushedHint, "%player%", player.Nickname), 5);
+            hitPlayer.ShowHint(Regex.Replace(Main.Instance.Config.PushedHint, "%player%", player.Nickname), 5);
             response = $"{player.Nickname} has been pushed.";
             return true;
 
